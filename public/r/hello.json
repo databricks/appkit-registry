@@ -4,7 +4,7 @@
   "type": "registry:file",
   "title": "Hello Plugin",
   "author": "Databricks AppKit",
-  "description": "Minimal example AppKit server plugin that exposes a GET /api/hello route. Added with `appkit plugin add hello`.",
+  "description": "Minimal example AppKit server plugin that exposes a GET /api/hello route. Added with `appkit add hello`.",
   "dependencies": [
     "@databricks/appkit@^0.41.0"
   ],
