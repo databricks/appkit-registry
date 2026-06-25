@@ -1,0 +1,21 @@
+{
+  "name": "appkit-registry",
+  "private": true,
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Official shadcn-style component registry for Databricks AppKit",
+  "scripts": {
+    "registry:build": "shadcn build",
+    "validate": "tsx scripts/validate.ts",
+    "check": "pnpm validate && pnpm registry:build"
+  },
+  "devDependencies": {
+    "shadcn": "^2.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@databricks/appkit-ui": ">=0.41.0",
+    "react": "^18.0.0 || ^19.0.0"
+  }
+}

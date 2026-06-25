@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "appkit",
+  "homepage": "https://github.com/databricks/appkit-registry",
+  "items": [
+    {
+      "name": "metric-card",
+      "type": "registry:block",
+      "title": "Metric Card",
+      "description": "A KPI card with a value, a period-over-period delta badge, and an optional icon. Built on AppKit UI Card + Badge.",
+      "author": "Databricks AppKit",
+      "dependencies": ["@databricks/appkit-ui@^0.41.0", "lucide-react"],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/metric-card/metric-card.tsx",
+          "type": "registry:component",
+          "target": "components/appkit/metric-card.tsx"
+        }
+      ]
+    }
+  ]
+}

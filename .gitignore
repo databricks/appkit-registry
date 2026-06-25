@@ -1,0 +1,7 @@
+node_modules
+# Built registry output (public/r) is committed — it IS the served registry.
+# Run `pnpm registry:build` before committing so it stays in sync with registry.json.
+*.log
+.DS_Store
+dist
+.turbo

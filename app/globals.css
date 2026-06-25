@@ -1,0 +1,11 @@
+/*
+ * Placeholder theme entry for `shadcn` tooling (referenced by components.json).
+ *
+ * Registry components do NOT ship their own theme — they rely on the consumer
+ * importing `@databricks/appkit-ui/styles.css` once at app root, which defines
+ * the AppKit color tokens (--background, --foreground, --muted-foreground, …).
+ *
+ * This file exists only so the registry repo's own preview/build tooling has a
+ * stylesheet to point at.
+ */
+@import "tailwindcss";

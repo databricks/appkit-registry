@@ -1,0 +1,26 @@
+name: registry
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Validate manifest
+        run: pnpm validate
+      - name: Build registry
+        run: pnpm registry:build
+      - name: Verify committed registry output is up to date
+        run: git diff --exit-code public/r || (echo "public/r is stale — run 'pnpm registry:build' and commit." && exit 1)
+  # TODO: add a type-check job that installs @databricks/appkit-ui into a fixture
+  #       app and compiles every registry/<name> against it.
