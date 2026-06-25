@@ -10,6 +10,7 @@
       "description": "A KPI card with a value, a period-over-period delta badge, and an optional icon. Built on AppKit UI Card + Badge.",
       "author": "Databricks AppKit",
       "meta": { "verified": true },
+      "categories": ["dashboard", "kpi", "metrics", "card", "chart", "stats"],
       "dependencies": ["@databricks/appkit-ui@^0.41.0", "lucide-react@^0.554.0"],
       "registryDependencies": [],
       "files": [
@@ -26,6 +27,7 @@
       "title": "Hello Plugin",
       "description": "Minimal example AppKit server plugin that exposes a GET /api/hello route. Added with `appkit add hello`.",
       "author": "Databricks AppKit",
+      "categories": ["example", "server", "plugin", "starter", "route"],
       "dependencies": ["@databricks/appkit@^0.41.0"],
       "registryDependencies": [],
       "files": [

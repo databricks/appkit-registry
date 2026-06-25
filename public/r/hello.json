@@ -28,5 +28,12 @@
       "type": "registry:file",
       "target": "plugins/hello/index.ts"
     }
+  ],
+  "categories": [
+    "example",
+    "server",
+    "plugin",
+    "starter",
+    "route"
   ]
 }

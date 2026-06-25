@@ -20,5 +20,13 @@
   ],
   "meta": {
     "verified": true
-  }
+  },
+  "categories": [
+    "dashboard",
+    "kpi",
+    "metrics",
+    "card",
+    "chart",
+    "stats"
+  ]
 }
