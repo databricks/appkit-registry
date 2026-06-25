@@ -26,6 +26,9 @@ self-contained, dependency-light, and built on `@databricks/appkit-ui` primitive
      "type": "registry:block",
      "title": "Human Title",
      "description": "One sentence on what it does and what it composes.",
+     // Keywords for `appkit registry search` — add the terms people (and agents)
+     // would search for: domain, UI pattern, synonyms.
+     "categories": ["dashboard", "kpi", "chart"],
      "dependencies": ["@databricks/appkit-ui@^0.41.0", "lucide-react"],
      "files": [
        {
@@ -36,6 +39,8 @@ self-contained, dependency-light, and built on `@databricks/appkit-ui` primitive
      ]
    }
    ```
+   A clear `description` + good `categories` are what make an item discoverable via
+   `appkit registry search` — treat them as part of the contract, not an afterthought.
 3. Run `pnpm check` (validate + build).
 4. Open a PR. CI validates the manifest, builds the registry, and type-checks your component
    against a fixture app with `@databricks/appkit-ui` installed.
