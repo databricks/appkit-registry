@@ -18,6 +18,32 @@
           "target": "components/appkit/metric-card.tsx"
         }
       ]
+    },
+    {
+      "name": "hello",
+      "type": "registry:file",
+      "title": "Hello Plugin",
+      "description": "Minimal example AppKit server plugin that exposes a GET /api/hello route. Added with `appkit plugin add hello`.",
+      "author": "Databricks AppKit",
+      "dependencies": ["@databricks/appkit@^0.41.0"],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/hello/manifest.json",
+          "type": "registry:file",
+          "target": "plugins/hello/manifest.json"
+        },
+        {
+          "path": "registry/hello/hello.ts",
+          "type": "registry:file",
+          "target": "plugins/hello/hello.ts"
+        },
+        {
+          "path": "registry/hello/index.ts",
+          "type": "registry:file",
+          "target": "plugins/hello/index.ts"
+        }
+      ]
     }
   ]
 }

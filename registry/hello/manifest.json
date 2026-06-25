@@ -1,0 +1,11 @@
+{
+  "$schema": "https://databricks.github.io/appkit/schemas/plugin-manifest.schema.json",
+  "name": "hello",
+  "displayName": "Hello Plugin",
+  "description": "Minimal example plugin that exposes a GET /api/hello route.",
+  "version": "0.1.0",
+  "resources": {
+    "required": [],
+    "optional": []
+  }
+}
