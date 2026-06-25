@@ -15,7 +15,7 @@
         {
           "path": "registry/metric-card/metric-card.tsx",
           "type": "registry:component",
-          "target": "components/metric-card.tsx"
+          "target": "components/appkit/metric-card.tsx"
         }
       ]
     }

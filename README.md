@@ -46,7 +46,7 @@ npx shadcn@latest add @appkit/metric-card
 appkit add metric-card
 ```
 
-The CLI copies the source into your project (e.g. `src/components/metric-card.tsx`) and installs
+The CLI copies the source into your project (e.g. `client/src/components/appkit/metric-card.tsx`) and installs
 any npm dependencies the item declares.
 
 ## Repository layout
