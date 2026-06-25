@@ -17,5 +17,8 @@
       "type": "registry:component",
       "target": "components/appkit/metric-card.tsx"
     }
-  ]
+  ],
+  "meta": {
+    "verified": true
+  }
 }

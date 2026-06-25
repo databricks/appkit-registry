@@ -40,6 +40,18 @@ self-contained, dependency-light, and built on `@databricks/appkit-ui` primitive
 4. Open a PR. CI validates the manifest, builds the registry, and type-checks your component
    against a fixture app with `@databricks/appkit-ui` installed.
 
+## Verified items
+
+Items reviewed and maintained by the AppKit team are marked verified:
+
+```jsonc
+{ "name": "metric-card", "meta": { "verified": true }, /* ... */ }
+```
+
+`appkit registry list` shows a ✓ for verified items (and `--verified` filters to
+them). **Do not set `verified` in a community PR** — a maintainer adds it on
+review. Community items ship unverified by default.
+
 ## Item `type` cheat sheet
 
 | `type`                | Use for                                          |
