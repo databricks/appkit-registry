@@ -9,7 +9,7 @@
       "title": "Metric Card",
       "description": "A KPI card with a value, a period-over-period delta badge, and an optional icon. Built on AppKit UI Card + Badge.",
       "author": "Databricks AppKit",
-      "dependencies": ["@databricks/appkit-ui@^0.41.0", "lucide-react"],
+      "dependencies": ["@databricks/appkit-ui@^0.41.0", "lucide-react@^0.554.0"],
       "registryDependencies": [],
       "files": [
         {
