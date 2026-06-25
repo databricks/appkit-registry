@@ -31,7 +31,7 @@ self-contained, dependency-light, and built on `@databricks/appkit-ui` primitive
        {
          "path": "registry/<name>/<name>.tsx",
          "type": "registry:component",
-         "target": "components/appkit/<name>.tsx"
+         "target": "components/<name>.tsx"
        }
      ]
    }

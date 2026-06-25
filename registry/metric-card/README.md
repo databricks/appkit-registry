@@ -14,7 +14,7 @@ appkit add metric-card
 ## Usage
 
 ```tsx
-import { MetricCard } from "@/components/appkit/metric-card";
+import { MetricCard } from "@/components/metric-card";
 import { Users } from "lucide-react";
 
 <MetricCard
