@@ -6,7 +6,7 @@ period-over-period delta badge that colors itself by direction.
 ## Install
 
 ```bash
-npx shadcn@latest add @appkit/metric-card
+npx shadcn@latest add @databricks-appkit/metric-card
 # or, with the AppKit CLI
 appkit add metric-card
 ```

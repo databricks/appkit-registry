@@ -26,12 +26,12 @@ npm install @databricks/appkit-ui
 import "@databricks/appkit-ui/styles.css";
 ```
 
-### 2. Add the `@appkit` namespace to `components.json`
+### 2. Add the `@databricks-appkit` namespace to `components.json`
 
 ```jsonc
 {
   "registries": {
-    "@appkit": "https://raw.githubusercontent.com/databricks/appkit-registry/main/public/r/{name}.json"
+    "@databricks-appkit": "https://raw.githubusercontent.com/databricks/appkit-registry/main/public/r/{name}.json"
   }
 }
 ```
@@ -47,8 +47,8 @@ appkit add hello              # plugin → <server>/plugins/hello/ + plugin sync
 appkit add metric-card hello  # mix in one call
 ```
 
-UI components can also be pulled with the stock shadcn CLI via the `@appkit`
-namespace (`npx shadcn@latest add @appkit/metric-card`). Plugins use `appkit add`
+UI components can also be pulled with the stock shadcn CLI via the `@databricks-appkit`
+namespace (`npx shadcn@latest add @databricks-appkit/metric-card`). Plugins use `appkit add`
 because they need manifest sync and server registration.
 
 The CLI copies the source into your project and installs any npm dependencies the
