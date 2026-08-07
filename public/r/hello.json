@@ -12,7 +12,7 @@
   "files": [
     {
       "path": "registry/hello/manifest.json",
-      "content": "{\n  \"$schema\": \"https://databricks.github.io/appkit/schemas/plugin-manifest.schema.json\",\n  \"name\": \"hello\",\n  \"displayName\": \"Hello Plugin\",\n  \"description\": \"Minimal example plugin that exposes a GET /api/hello route.\",\n  \"version\": \"0.1.0\",\n  \"resources\": {\n    \"required\": [],\n    \"optional\": []\n  }\n}\n",
+      "content": "{\n  \"$schema\": \"https://databricks.github.io/appkit/schemas/plugin-manifest.schema.json\",\n  \"name\": \"hello\",\n  \"displayName\": \"Hello Plugin\",\n  \"description\": \"Minimal example plugin that exposes a GET /api/hello route.\",\n  \"version\": \"0.1.0\",\n  \"resources\": {\n    \"required\": [\n      {\n        \"type\": \"sql_warehouse\",\n        \"alias\": \"SQL Warehouse\",\n        \"resourceKey\": \"sql-warehouse\",\n        \"description\": \"SQL Warehouse the hello plugin can query\",\n        \"permission\": \"CAN_USE\",\n        \"fields\": {\n          \"id\": {\n            \"env\": \"DATABRICKS_WAREHOUSE_ID\",\n            \"description\": \"SQL Warehouse ID\",\n            \"discovery\": {\n              \"type\": \"kind\",\n              \"resourceKind\": \"warehouse\"\n            }\n          }\n        }\n      }\n    ],\n    \"optional\": []\n  }\n}\n",
       "type": "registry:file",
       "target": "plugins/hello/manifest.json"
     },
