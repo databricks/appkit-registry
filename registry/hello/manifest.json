@@ -5,7 +5,25 @@
   "description": "Minimal example plugin that exposes a GET /api/hello route.",
   "version": "0.1.0",
   "resources": {
-    "required": [],
+    "required": [
+      {
+        "type": "sql_warehouse",
+        "alias": "SQL Warehouse",
+        "resourceKey": "sql-warehouse",
+        "description": "SQL Warehouse the hello plugin can query",
+        "permission": "CAN_USE",
+        "fields": {
+          "id": {
+            "env": "DATABRICKS_WAREHOUSE_ID",
+            "description": "SQL Warehouse ID",
+            "discovery": {
+              "type": "kind",
+              "resourceKind": "warehouse"
+            }
+          }
+        }
+      }
+    ],
     "optional": []
   }
 }
