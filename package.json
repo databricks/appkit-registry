@@ -7,7 +7,9 @@
   "scripts": {
     "registry:build": "shadcn build",
     "validate": "tsx scripts/validate.ts",
-    "check": "pnpm validate && pnpm registry:build"
+    "check": "pnpm validate && pnpm registry:build",
+    "check:licenses": "tsx scripts/check-licenses.ts",
+    "build:notice": "tsx scripts/build-notice.ts > NOTICE.md"
   },
   "devDependencies": {
     "shadcn": "^2.0.0",
