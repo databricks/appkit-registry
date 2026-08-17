@@ -16,6 +16,8 @@ jobs:
           node-version: 20
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Run License Check
+        run: pnpm check:licenses
       - name: Validate manifest
         run: pnpm validate
       - name: Build registry
