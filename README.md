@@ -47,10 +47,6 @@ appkit add hello              # plugin → <server>/plugins/hello/ + plugin sync
 appkit add metric-card hello  # mix in one call
 ```
 
-UI components can also be pulled with the stock shadcn CLI via the `@databricks-appkit`
-namespace (`npx shadcn@latest add @databricks-appkit/metric-card`). Plugins use `appkit add`
-because they need manifest sync and server registration.
-
 The CLI copies the source into your project and installs any npm dependencies the
 item declares. For plugins it also runs `appkit plugin sync` and prints the
 `createApp` registration snippet.
