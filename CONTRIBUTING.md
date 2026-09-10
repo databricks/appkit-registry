@@ -86,22 +86,3 @@ review. Community items ship unverified by default.
 | `registry:hook`       | A standalone React hook                          |
 | `registry:lib`        | A utility module                                 |
 | `registry:theme`      | Color tokens / theme overrides                   |
-| `registry:file`       | Arbitrary file with an explicit `target` (server plugins) |
-
-## Server plugins
-
-The registry also distributes AppKit **server plugins**, installed with the same
-`appkit add <name>` command — the CLI detects a plugin by its `manifest.json` and
-routes it to the server. A plugin item:
-
-1. Lives in `registry/<name>/` with `manifest.json`, `<name>.ts`, and `index.ts`
-   (the same shape `appkit plugin create` scaffolds).
-2. Uses `type: "registry:file"` for each file, with `target` paths under
-   `plugins/<name>/` (relative to the server root). The CLI writes them under
-   `<server>/plugins/<name>/`, not into the client.
-3. Declares `@databricks/appkit` in `dependencies` (pinned), not `appkit-ui`.
-
-For a plugin item, `appkit add` writes the files, installs deps, runs
-`appkit plugin sync`, and prints the `createApp({ plugins: [...] })` snippet plus
-any required env vars from the manifest. See `registry/hello/` for a working
-example.

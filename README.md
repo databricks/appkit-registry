@@ -38,22 +38,19 @@ import "@databricks/appkit-ui/styles.css";
 
 ### 3. Add an item
 
-`appkit add` handles both UI components and server plugins — it detects the kind
-and routes each to the right place:
-
 ```bash
-appkit add metric-card        # UI → <client>/src/components/appkit/metric-card.tsx
-appkit add hello              # plugin → <server>/plugins/hello/ + plugin sync
-appkit add metric-card hello  # mix in one call
+appkit add metric-card   # → <client>/src/components/appkit/metric-card.tsx
 ```
 
-UI components can also be pulled with the stock shadcn CLI via the `@databricks-appkit`
-namespace (`npx shadcn@latest add @databricks-appkit/metric-card`). Plugins use `appkit add`
-because they need manifest sync and server registration.
+Components can also be pulled with the stock shadcn CLI via the `@databricks-appkit`
+namespace:
+
+```bash
+npx shadcn@latest add @databricks-appkit/metric-card
+```
 
 The CLI copies the source into your project and installs any npm dependencies the
-item declares. For plugins it also runs `appkit plugin sync` and prints the
-`createApp` registration snippet.
+item declares.
 
 ## Repository layout
 
