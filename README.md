@@ -87,8 +87,7 @@ pnpm check           # validate + build
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-## TODO before going public
+## License
 
-- [ ] Add a `LICENSE` (AppKit uses Apache-2.0).
-- [ ] Create the public `databricks/appkit-registry` repo and push.
-- [ ] Add the `appkit add` / `appkit registry` commands to the AppKit CLI (in progress).
+Apache-2.0 — see [LICENSE](./LICENSE). Third-party dependency licenses are listed in
+[NOTICE.md](./NOTICE.md).
