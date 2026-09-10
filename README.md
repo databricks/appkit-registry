@@ -38,12 +38,18 @@ import "@databricks/appkit-ui/styles.css";
 
 ### 3. Add an item
 
+`appkit add` handles both UI components and server plugins — it detects the kind
+and routes each to the right place:
+
 ```bash
-appkit add metric-card   # → <client>/src/components/appkit/metric-card.tsx
+appkit add metric-card        # UI → <client>/src/components/appkit/metric-card.tsx
+appkit add hello              # plugin → <server>/plugins/hello/ + plugin sync
+appkit add metric-card hello  # mix in one call
 ```
 
 The CLI copies the source into your project and installs any npm dependencies the
-item declares.
+item declares. For plugins it also runs `appkit plugin sync` and prints the
+`createApp` registration snippet.
 
 ## Repository layout
 
