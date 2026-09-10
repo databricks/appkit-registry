@@ -42,13 +42,6 @@ import "@databricks/appkit-ui/styles.css";
 appkit add metric-card   # → <client>/src/components/appkit/metric-card.tsx
 ```
 
-Components can also be pulled with the stock shadcn CLI via the `@databricks-appkit`
-namespace:
-
-```bash
-npx shadcn@latest add @databricks-appkit/metric-card
-```
-
 The CLI copies the source into your project and installs any npm dependencies the
 item declares.
 
