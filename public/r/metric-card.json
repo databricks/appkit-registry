@@ -6,7 +6,7 @@
   "author": "Databricks AppKit",
   "description": "A KPI card with a value, a period-over-period delta badge, and an optional icon. Built on AppKit UI Card + Badge.",
   "dependencies": [
-    "@databricks/appkit-ui@^0.41.0",
+    "@databricks/appkit-ui@>=0.41.0",
     "lucide-react@^0.554.0"
   ],
   "registryDependencies": [],

@@ -28,7 +28,10 @@ git commit -s -m "Your commit message"
 1. **Compose, don't redefine.** Import primitives (`Button`, `Card`, `cn`, …) from
    `@databricks/appkit-ui/react`. Never copy shadcn primitive source into a registry item.
 2. **Declare every dependency.** Anything you import from npm goes in the item's `dependencies`.
-   Pin a minimum AppKit version, e.g. `"@databricks/appkit-ui@^0.41.0"`.
+   Declare a minimum AppKit version with an **open lower bound**, e.g.
+   `"@databricks/appkit-ui@>=0.41.0"` — never a caret (`^`). On a `0.x` package `^0.41.0`
+   means `>=0.41.0 <0.42.0`, so `appkit add` would downgrade an app already on a newer
+   `0.x` back into the `0.41.x` window. `>=` states the floor without capping the ceiling.
 3. **Self-contained folder.** One folder per component under `registry/<name>/`. Co-locate hooks,
    types, and a `README.md` with usage + props.
 4. **No app-specific coupling.** No hardcoded routes, env vars, or server endpoints. Take data via
@@ -49,7 +52,7 @@ git commit -s -m "Your commit message"
      // Keywords for `appkit registry search` — add the terms people (and agents)
      // would search for: domain, UI pattern, synonyms.
      "categories": ["dashboard", "kpi", "chart"],
-     "dependencies": ["@databricks/appkit-ui@^0.41.0", "lucide-react"],
+     "dependencies": ["@databricks/appkit-ui@>=0.41.0", "lucide-react"],
      "files": [
        {
          "path": "registry/<name>/<name>.tsx",
