@@ -1,8 +1,22 @@
 #!/usr/bin/env node
+import { readFileSync } from "node:fs";
 import { getProductionDependencyLicenses, type Package } from "./license-utils";
 
+const pkg = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+);
+// Attribute only our direct dependencies, not their transitive trees: the
+// registry ships source snippets and relies on the consumer to provide the
+// peers, so their sub-dependencies aren't ours to redistribute.
+const directDeps = new Set<string>([
+  ...Object.keys(pkg.dependencies ?? {}),
+  ...Object.keys(pkg.peerDependencies ?? {}),
+]);
+
 try {
-  const packages = getProductionDependencyLicenses();
+  const packages = getProductionDependencyLicenses().filter((dep) =>
+    directDeps.has(dep.name),
+  );
   main(packages);
 } catch (err) {
   console.error("❌ Error running license check:", err);
