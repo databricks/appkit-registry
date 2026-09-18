@@ -1,0 +1,33 @@
+{
+  "$schema": "https://databricks.github.io/appkit/schemas/plugin-manifest.schema.json",
+  "name": "tavily",
+  "displayName": "Tavily",
+  "description": "Public web search and content extraction for AppKit apps and agents, powered by Tavily.",
+  "version": "0.1.0",
+  "stability": "beta",
+  "license": "Apache-2.0",
+  "resources": {
+    "required": [
+      {
+        "type": "secret",
+        "alias": "apiKey",
+        "resourceKey": "tavily-api-key",
+        "description": "App-level Tavily API key. Bind a Databricks secret with READ permission.",
+        "permission": "READ",
+        "fields": {
+          "scope": {
+            "description": "Databricks secret scope (deployment binding only)"
+          },
+          "key": {
+            "description": "Databricks secret key name (deployment binding only)"
+          },
+          "value": {
+            "env": "TAVILY_API_KEY",
+            "description": "Resolved secret value, not the secret key name"
+          }
+        }
+      }
+    ],
+    "optional": []
+  }
+}

@@ -4,6 +4,55 @@
   "homepage": "https://github.com/databricks/appkit-registry",
   "items": [
     {
+      "name": "tavily",
+      "type": "registry:file",
+      "title": "Tavily Web Search & Extract",
+      "description": "Search the public web and extract page content from AppKit server routes or agent tools, using an app-level Tavily API key.",
+      "categories": [
+        "plugin",
+        "server",
+        "search",
+        "web",
+        "extract",
+        "agents",
+        "tavily"
+      ],
+      "dependencies": ["@databricks/appkit@>=0.76.0", "zod@^4.3.6"],
+      "devDependencies": ["@types/express@^4.17.25"],
+      "files": [
+        {
+          "path": "registry/tavily/manifest.json",
+          "type": "registry:file",
+          "target": "plugins/tavily/manifest.json"
+        },
+        {
+          "path": "registry/tavily/index.ts",
+          "type": "registry:file",
+          "target": "plugins/tavily/index.ts"
+        },
+        {
+          "path": "registry/tavily/tavily.ts",
+          "type": "registry:file",
+          "target": "plugins/tavily/tavily.ts"
+        },
+        {
+          "path": "registry/tavily/client.ts",
+          "type": "registry:file",
+          "target": "plugins/tavily/client.ts"
+        },
+        {
+          "path": "registry/tavily/schemas.ts",
+          "type": "registry:file",
+          "target": "plugins/tavily/schemas.ts"
+        },
+        {
+          "path": "registry/tavily/README.md",
+          "type": "registry:file",
+          "target": "plugins/tavily/README.md"
+        }
+      ]
+    },
+    {
       "name": "metric-card",
       "type": "registry:block",
       "title": "Metric Card",
@@ -12,14 +61,7 @@
       "meta": {
         "verified": true
       },
-      "categories": [
-        "dashboard",
-        "kpi",
-        "metrics",
-        "card",
-        "chart",
-        "stats"
-      ],
+      "categories": ["dashboard", "kpi", "metrics", "card", "chart", "stats"],
       "dependencies": [
         "@databricks/appkit-ui@>=0.41.0",
         "lucide-react@^0.554.0"
