@@ -43,13 +43,14 @@ and routes each to the right place:
 
 ```bash
 appkit add metric-card        # UI → <client>/src/components/appkit/metric-card.tsx
-appkit add hello              # plugin → <server>/plugins/hello/ + plugin sync
-appkit add metric-card hello  # mix in one call
+appkit add designer --allow-unverified  # plugin → <server>/plugins/designer/ + plugin sync
+appkit add metric-card designer --allow-unverified  # mix in one call
 ```
 
 The CLI copies the source into your project and installs any npm dependencies the
 item declares. For plugins it also runs `appkit plugin sync` and prints the
-`createApp` registration snippet.
+`createApp` registration. See [Lakeflow Designer](registry/designer/README.md) for the
+Designer publisher contract and how to update the installed source.
 
 ## Repository layout
 

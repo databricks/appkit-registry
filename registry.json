@@ -32,6 +32,219 @@
           "target": "components/appkit/metric-card.tsx"
         }
       ]
+    },
+    {
+      "name": "designer",
+      "type": "registry:file",
+      "title": "Lakeflow Designer",
+      "description": "Run published Lakeflow Designer Apps with viewer-scoped Jobs, manifest-driven results, and file uploads and downloads.",
+      "categories": [
+        "designer",
+        "lakeflow",
+        "jobs",
+        "files",
+        "server",
+        "plugin"
+      ],
+      "dependencies": [
+        "@databricks/appkit@0.89.0",
+        "yaml@2.8.3",
+        "zod@4.6.6",
+        "@types/express@4.17.25"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/designer/README.md",
+          "type": "registry:file",
+          "target": "plugins/designer/README.md"
+        },
+        {
+          "path": "registry/designer/client.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/client.ts"
+        },
+        {
+          "path": "registry/designer/designer.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/designer.ts"
+        },
+        {
+          "path": "registry/designer/index.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/index.ts"
+        },
+        {
+          "path": "registry/designer/manifest.json",
+          "type": "registry:file",
+          "target": "plugins/designer/manifest.json"
+        },
+        {
+          "path": "registry/designer/server/browserRequestOrigin.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/browserRequestOrigin.ts"
+        },
+        {
+          "path": "registry/designer/server/exportedRunOutput.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/exportedRunOutput.ts"
+        },
+        {
+          "path": "registry/designer/server/fileDownloads.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/fileDownloads.ts"
+        },
+        {
+          "path": "registry/designer/server/fileUploads.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/fileUploads.ts"
+        },
+        {
+          "path": "registry/designer/server/guardrails.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/guardrails.ts"
+        },
+        {
+          "path": "registry/designer/server/jobParameters.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/jobParameters.ts"
+        },
+        {
+          "path": "registry/designer/server/manifest.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/manifest.ts"
+        },
+        {
+          "path": "registry/designer/server/outputFileStore.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/outputFileStore.ts"
+        },
+        {
+          "path": "registry/designer/server/outputFiles.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/outputFiles.ts"
+        },
+        {
+          "path": "registry/designer/server/runAttribution.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/runAttribution.ts"
+        },
+        {
+          "path": "registry/designer/server/runHistory.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/runHistory.ts"
+        },
+        {
+          "path": "registry/designer/server/runOutputs.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/runOutputs.ts"
+        },
+        {
+          "path": "registry/designer/server/runParameters.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/runParameters.ts"
+        },
+        {
+          "path": "registry/designer/server/runRevision.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/runRevision.ts"
+        },
+        {
+          "path": "registry/designer/server/runtime.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/runtime.ts"
+        },
+        {
+          "path": "registry/designer/server/storageVolume.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/storageVolume.ts"
+        },
+        {
+          "path": "registry/designer/server/uploadStore.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/uploadStore.ts"
+        },
+        {
+          "path": "registry/designer/server/uploads.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/uploads.ts"
+        },
+        {
+          "path": "registry/designer/server/workspaceClient.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/workspaceClient.ts"
+        },
+        {
+          "path": "registry/designer/server/workspaceFiles.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/server/workspaceFiles.ts"
+        },
+        {
+          "path": "registry/designer/shared/appManifest.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/appManifest.ts"
+        },
+        {
+          "path": "registry/designer/shared/fileFormats.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/fileFormats.ts"
+        },
+        {
+          "path": "registry/designer/shared/fileOutputs.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/fileOutputs.ts"
+        },
+        {
+          "path": "registry/designer/shared/guardrails.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/guardrails.ts"
+        },
+        {
+          "path": "registry/designer/shared/htmlOutputs.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/htmlOutputs.ts"
+        },
+        {
+          "path": "registry/designer/shared/multiselect.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/multiselect.ts"
+        },
+        {
+          "path": "registry/designer/shared/publishedRunner.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/publishedRunner.ts"
+        },
+        {
+          "path": "registry/designer/shared/resultPreview.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/resultPreview.ts"
+        },
+        {
+          "path": "registry/designer/shared/routes.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/routes.ts"
+        },
+        {
+          "path": "registry/designer/shared/runPayload.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/runPayload.ts"
+        },
+        {
+          "path": "registry/designer/shared/runSummary.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/runSummary.ts"
+        },
+        {
+          "path": "registry/designer/shared/storageConfig.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/storageConfig.ts"
+        },
+        {
+          "path": "registry/designer/shared/values.ts",
+          "type": "registry:file",
+          "target": "plugins/designer/shared/values.ts"
+        }
+      ]
     }
   ]
 }

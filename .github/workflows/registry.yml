@@ -15,7 +15,7 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Run License Check
@@ -24,6 +24,12 @@ jobs:
         run: pnpm validate
       - name: Build registry
         run: pnpm registry:build
+      - name: Type-check Designer plugin
+        run: pnpm typecheck:designer
+      - name: Test Designer plugin
+        run: pnpm test:designer
+      - name: Test Designer registry installation
+        run: pnpm test:designer-install
       - name: Verify committed registry output is up to date
         run: git diff --exit-code public/r || (echo "public/r is stale — run 'pnpm registry:build' and commit." && exit 1)
   # TODO: add a type-check job that installs @databricks/appkit-ui into a fixture

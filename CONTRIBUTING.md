@@ -106,5 +106,4 @@ routes it to the server. A plugin item:
 
 For a plugin item, `appkit add` writes the files, installs deps, runs
 `appkit plugin sync`, and prints the `createApp({ plugins: [...] })` snippet plus
-any required env vars from the manifest. See `registry/hello/` for a working
-example.
+any required env vars from the manifest. See `registry/designer/` for a tested example, including server and browser-safe entry points.

@@ -7,17 +7,31 @@
   "scripts": {
     "registry:build": "shadcn build",
     "validate": "tsx scripts/validate.ts",
-    "check": "pnpm validate && pnpm registry:build",
+    "check": "pnpm validate && pnpm registry:build && pnpm typecheck:designer && pnpm test:designer && pnpm test:designer-install",
     "check:licenses": "tsx scripts/check-licenses.ts",
-    "build:notice": "tsx scripts/build-notice.ts > NOTICE.md"
+    "build:notice": "tsx scripts/build-notice.ts > NOTICE.md",
+    "typecheck:designer": "tsc -p registry/designer/tsconfig.json",
+    "test:designer": "vitest run registry/designer/tests",
+    "test:designer-install": "tsx scripts/test-designer-install.ts"
   },
   "devDependencies": {
     "shadcn": "^2.0.0",
     "tsx": "^4.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@types/node": "24.6.0",
+    "vitest": "3.2.4",
+    "express": "4.22.2",
+    "@types/express": "4.17.25"
   },
   "peerDependencies": {
     "@databricks/appkit-ui": ">=0.41.0",
-    "react": "^18.0.0 || ^19.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "@databricks/appkit": "0.89.0",
+    "yaml": "2.8.3",
+    "zod": "4.6.6"
+  },
+  "packageManager": "pnpm@11.0.8",
+  "engines": {
+    "node": ">=22.13.0"
   }
 }

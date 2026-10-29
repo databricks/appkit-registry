@@ -1,0 +1,6 @@
+allowBuilds:
+  '@databricks/appkit': false
+  '@databricks/appkit-ui': false
+  esbuild: true
+  msw: false
+  protobufjs: false
