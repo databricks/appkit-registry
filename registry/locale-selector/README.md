@@ -1,6 +1,6 @@
 # Locale Selector
 
-A language picker built on AppKit UI `Select`. Each option shows the locale's name in its own language, using locale data from [`generaltranslation`](https://www.npmjs.com/package/generaltranslation).
+A language picker built on AppKit UI `Select`. Each option shows the locale's name in its own language (via `Intl.DisplayNames`, no extra dependency).
 
 ## Usage
 

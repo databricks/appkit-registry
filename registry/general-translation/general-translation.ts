@@ -16,7 +16,8 @@ import {
   type ToolkitEntry,
   type ToolkitOptions,
 } from "@databricks/appkit/beta";
-import { determineLocale, GT } from "generaltranslation";
+import type { Response } from "express";
+import { determineLocale, GT, isSameDialect } from "generaltranslation";
 import { z } from "zod";
 import manifest from "./manifest.json";
 import {
@@ -30,36 +31,21 @@ export interface GeneralTranslationConfig extends BasePluginConfig {
   defaultLocale?: string;
   /** Locales the app supports. Used for locale detection and the client config. */
   locales?: string[];
-  /**
-   * General Translation project ID. Falls back to GT_PROJECT_ID, then to the
-   * project the API key belongs to.
-   */
+  /** General Translation project ID. Falls back to GT_PROJECT_ID. */
   projectId?: string;
 }
 
-/** A project API key is bound to one project, which the API will list. */
-async function resolveProjectId(apiKey: string): Promise<string> {
-  const response = await fetch("https://api.gtx.dev/v2/projects", {
-    headers: { Authorization: `Bearer ${apiKey}` },
-  });
-  if (response.ok) {
-    const { items } = (await response.json()) as { items?: { id: string }[] };
-    if (items?.length === 1) return items[0].id;
-  }
-  throw new Error(
-    "Could not find the General Translation project for GT_API_KEY. Use a project API key, or set GT_PROJECT_ID.",
-  );
-}
+const CLIENT_ERROR_MESSAGE = "Translation failed.";
 
 export class GeneralTranslationError extends AppKitError {
   readonly code = "GT_ERROR";
   readonly isRetryable: boolean;
   constructor(
-    message: string,
-    public readonly statusCode: number,
+    public readonly statusCode: 429 | 502,
+    details: string,
   ) {
-    super(message, { clientMessage: message });
-    this.isRetryable = statusCode === 429 || statusCode >= 500;
+    super(details, { clientMessage: CLIENT_ERROR_MESSAGE });
+    this.isRetryable = statusCode === 429;
     this.name = "GeneralTranslationError";
   }
 }
@@ -76,7 +62,7 @@ export class GeneralTranslationPlugin
   };
 
   private gt!: GT;
-  private credentialScope = "";
+  private projectId = "";
   private tools: ToolRegistry;
 
   constructor(config: GeneralTranslationConfig) {
@@ -104,35 +90,34 @@ export class GeneralTranslationPlugin
   async setup() {
     const apiKey = process.env.GT_API_KEY?.trim();
     if (!apiKey) throw new Error("GT_API_KEY is required on the server.");
-    const projectId =
-      this.config.projectId ||
-      process.env.GT_PROJECT_ID?.trim() ||
-      (await resolveProjectId(apiKey));
-    this.gt = new GT({
-      apiKey,
-      projectId,
-      sourceLocale: this.defaultLocale,
-    });
-    this.credentialScope = createHash("sha256")
-      .update(`${projectId}:${apiKey}`)
-      .digest("hex");
+    const projectId = this.config.projectId ?? process.env.GT_PROJECT_ID?.trim();
+    if (!projectId)
+      throw new Error(
+        "Set GT_PROJECT_ID or pass projectId to the General Translation plugin.",
+      );
+    this.projectId = projectId;
+    this.gt = new GT({ apiKey, projectId, sourceLocale: this.defaultLocale });
   }
 
   /** Picks the best supported locale for an Accept-Language header. */
-  detectLocale(acceptLanguage?: string): string {
-    const requested = (acceptLanguage ?? "")
+  detectLocale(acceptLanguage = ""): string {
+    const requested = acceptLanguage
       .split(",")
-      .map((part) => part.split(";")[0].trim())
-      .filter(Boolean);
+      .map((entry) => {
+        const [locale, ...params] = entry.split(";").map((part) => part.trim());
+        const q = params.find((param) => param.startsWith("q="));
+        return { locale, quality: q ? Number(q.slice(2)) : 1 };
+      })
+      .filter(({ locale, quality }) => locale && locale !== "*" && quality > 0)
+      .sort((a, b) => b.quality - a.quality)
+      .map(({ locale }) => locale);
     return determineLocale(requested, this.locales) ?? this.defaultLocale;
   }
 
   async translate(input: TranslateRequest): Promise<TranslateResponse> {
-    if (!this.gt)
-      throw new Error("General Translation plugin is not initialized.");
     const { texts, targetLocale, sourceLocale, context } =
       translateRequestSchema.parse(input);
-    if ((sourceLocale ?? this.defaultLocale) === targetLocale)
+    if (isSameDialect(sourceLocale ?? this.defaultLocale, targetLocale))
       return { locale: targetLocale, translations: texts };
 
     const digest = createHash("sha256")
@@ -146,15 +131,14 @@ export class GeneralTranslationPlugin
             metadata: { dataFormat: "STRING" as const, context },
           })),
           { targetLocale, sourceLocale },
-          GeneralTranslationPlugin.DEFAULT_CONFIG.timeout,
         );
         return {
           locale: targetLocale,
           translations: results.map((result) => {
             if (!result.success)
               throw new GeneralTranslationError(
-                `Translation failed: ${result.error}`,
-                result.code >= 400 && result.code < 600 ? result.code : 502,
+                result.code === 429 ? 429 : 502,
+                result.error,
               );
             return String(result.translation);
           }),
@@ -162,13 +146,14 @@ export class GeneralTranslationPlugin
       },
       {
         default: GeneralTranslationPlugin.DEFAULT_CONFIG,
-        user: {
-          cache: { cacheKey: ["gt", this.credentialScope, digest] },
-        },
+        user: { cache: { cacheKey: ["gt", this.projectId, digest] } },
       },
     );
     if (!result.ok)
-      throw new GeneralTranslationError(result.message, result.status);
+      throw new GeneralTranslationError(
+        result.status === 429 ? 429 : 502,
+        result.message,
+      );
     return result.data;
   }
 
@@ -178,11 +163,7 @@ export class GeneralTranslationPlugin
       method: "get",
       path: "/locale",
       handler: async (req, res) => {
-        res.json({
-          locale: this.detectLocale(req.get("accept-language")),
-          defaultLocale: this.defaultLocale,
-          locales: this.locales,
-        });
+        res.json({ locale: this.detectLocale(req.get("accept-language")) });
       },
     });
     this.route(router, {
@@ -190,16 +171,8 @@ export class GeneralTranslationPlugin
       method: "post",
       path: "/translate",
       handler: async (req, res) => {
-        const input = translateRequestSchema.safeParse(req.body);
-        if (!input.success) {
-          res.status(400).json({
-            error: "Invalid translate request",
-            issues: input.error.issues,
-          });
-          return;
-        }
         try {
-          res.json(await this.translate(input.data));
+          res.json(await this.translate(req.body));
         } catch (error) {
           this.sendError(res, error);
         }
@@ -207,20 +180,16 @@ export class GeneralTranslationPlugin
     });
   }
 
-  private sendError(res: import("express").Response, error: unknown) {
+  private sendError(res: Response, error: unknown) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ error: "Invalid options", issues: error.issues });
+      res
+        .status(400)
+        .json({ error: "Invalid translate request", issues: error.issues });
       return;
     }
     res
       .status(error instanceof GeneralTranslationError ? error.statusCode : 500)
-      .json({
-        error:
-          error instanceof GeneralTranslationError
-            ? error.message
-            : "Translation request failed.",
-        plugin: this.name,
-      });
+      .json({ error: CLIENT_ERROR_MESSAGE, plugin: this.name });
   }
 
   getAgentTools() {
@@ -228,8 +197,6 @@ export class GeneralTranslationPlugin
   }
 
   executeAgentTool(name: string, args: unknown, signal?: AbortSignal) {
-    if (!Object.hasOwn(this.tools, name))
-      return Promise.reject(new Error(`Unknown General Translation tool: ${name}`));
     return executeFromRegistry(this.tools, name, args, signal);
   }
 

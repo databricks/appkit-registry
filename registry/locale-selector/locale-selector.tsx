@@ -6,7 +6,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@databricks/appkit-ui/react";
-import { getLocaleProperties } from "generaltranslation";
 import { LanguagesIcon } from "lucide-react";
 
 export interface LocaleSelectorProps {
@@ -41,7 +40,7 @@ export function LocaleSelector({
       <SelectContent>
         {locales.map((locale) => (
           <SelectItem key={locale} value={locale}>
-            {getLocaleProperties(locale).nativeName}
+            {new Intl.DisplayNames([locale], { type: "language" }).of(locale)}
           </SelectItem>
         ))}
       </SelectContent>
