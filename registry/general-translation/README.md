@@ -45,14 +45,14 @@ await app.gt.translate({
 app.gt.detectLocale('fr-CA,fr;q=0.9,en;q=0.8'); // → "fr"
 ```
 
-Translations are cached per input (1 hour by default) through AppKit's execution interceptors, so repeated strings don't cost extra calls.
+AppKit caches each request for 1 hour by default, per user, so repeating the same request doesn't cost another call.
 
 ## Routes
 
 | Route                    | Description                                                                                    |
 | ------------------------ | ---------------------------------------------------------------------------------------------- |
 | `GET /api/gt/locale`     | Best supported locale for the request's `Accept-Language`.                                     |
-| `POST /api/gt/translate` | Body: `{ texts, targetLocale, sourceLocale?, context? }`.                                      |
+| `POST /api/gt/translate` | Body: `{ texts, targetLocale, sourceLocale?, context? }`. `targetLocale` must be in `locales`. |
 
 ## Agents
 

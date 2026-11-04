@@ -24,6 +24,7 @@ import {
   translate as translateEndpoint,
 } from "generaltranslation/api";
 import { hashSource } from "generaltranslation/id";
+import { defaultBaseUrl } from "generaltranslation/internal";
 import { z } from "zod";
 import manifest from "./manifest.json";
 import {
@@ -44,21 +45,32 @@ export interface GeneralTranslationConfig extends BasePluginConfig {
   projectId?: string;
 }
 
-const GT_API_URL = "https://api.gtx.dev";
 const CLIENT_ERROR_MESSAGE = "Translation failed.";
 
 /** A project API key is bound to exactly one project. */
 async function resolveProjectId(apiKey: string): Promise<string> {
-  const client = createApiClient({
-    apiKey,
-    baseUrl: GT_API_URL,
-    timeoutMs: 10_000,
-  });
+  const client = createApiClient({ apiKey, baseUrl: defaultBaseUrl });
   const { data } = await listProjects({ client, query: { limit: 2 } });
   if (data?.items.length === 1) return data.items[0].id;
   throw new Error(
     "Could not find the project for GT_API_KEY. Use a project API key, or set GT_PROJECT_ID.",
   );
+}
+
+/**
+ * Stops waiting when the caller aborts. The shared, cached execution keeps
+ * running for other callers and is bounded by AppKit's timeout.
+ */
+function untilAborted<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
+  if (!signal) return promise;
+  signal.throwIfAborted();
+  return new Promise((resolve, reject) => {
+    const onAbort = () => reject(signal.reason);
+    signal.addEventListener("abort", onAbort, { once: true });
+    promise
+      .then(resolve, reject)
+      .finally(() => signal.removeEventListener("abort", onAbort));
+  });
 }
 
 export class GeneralTranslationError extends AppKitError {
@@ -90,7 +102,6 @@ export class GeneralTranslationPlugin
 
   constructor(config: GeneralTranslationConfig) {
     super(config);
-    this.config = { ...GeneralTranslationPlugin.DEFAULT_CONFIG, ...config };
     this.tools = {
       translate: defineTool({
         description:
@@ -120,7 +131,7 @@ export class GeneralTranslationPlugin
     // AppKit's execution signal carries the timeout, so the client sets none.
     this.client = createApiClient({
       apiKey,
-      baseUrl: GT_API_URL,
+      baseUrl: defaultBaseUrl,
       projectId,
       retryPolicy: "none",
       timeoutMs: false,
@@ -155,7 +166,7 @@ export class GeneralTranslationPlugin
     const digest = createHash("sha256")
       .update(JSON.stringify({ texts, targetLocale, sourceLocale, context }))
       .digest("hex");
-    const result = await this.execute(
+    const execution = this.execute(
       async (executionSignal) => {
         const metadata = { dataFormat: "STRING" as const, context };
         const hashes = texts.map((source) => hashSource({ source, ...metadata }));
@@ -169,12 +180,8 @@ export class GeneralTranslationPlugin
             sourceLocale,
             metadata: {},
           },
-          signal: AbortSignal.any(
-            [signal, executionSignal].filter((s) => s !== undefined),
-          ),
+          signal: executionSignal,
         });
-        signal?.throwIfAborted();
-        executionSignal?.throwIfAborted();
         if (!data)
           throw new GeneralTranslationError(
             response?.status ?? 502,
@@ -195,16 +202,10 @@ export class GeneralTranslationPlugin
       },
       {
         default: GeneralTranslationPlugin.DEFAULT_CONFIG,
-        user: {
-          cache: {
-            cacheKey: ["gt", this.projectId, digest],
-            // A shared cached execution would tie every caller to one
-            // caller's signal, so cancellable calls run on their own.
-            ...(signal ? { enabled: false } : {}),
-          },
-        },
+        user: { cache: { cacheKey: ["gt", this.projectId, digest] } },
       },
     );
+    const result = await untilAborted(execution, signal);
     if (!result.ok)
       throw new GeneralTranslationError(result.status, result.message);
     return result.data;
@@ -224,6 +225,13 @@ export class GeneralTranslationPlugin
       method: "post",
       path: "/translate",
       handler: async (req, res) => {
+        if (!this.locales.includes(req.body?.targetLocale)) {
+          res.status(400).json({
+            error: "Unsupported targetLocale",
+            locales: this.locales,
+          });
+          return;
+        }
         try {
           res.json(await this.translate(req.body));
         } catch (error) {

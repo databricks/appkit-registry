@@ -42,8 +42,7 @@
         "Pass translation context describing where the text appears"
       ],
       "never": [
-        "Hard-code the GT API key in source or app.yaml",
-        "Call translate when the source and target locales match"
+        "Hard-code the GT API key in source or app.yaml"
       ]
     }
   }
