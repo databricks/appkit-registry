@@ -17,8 +17,13 @@ import {
   type ToolkitOptions,
 } from "@databricks/appkit/beta";
 import type { Response } from "express";
-import { determineLocale, GT, isSameDialect } from "generaltranslation";
-import { ApiError, createApiClient, listProjects } from "generaltranslation/api";
+import { determineLocale, isSameDialect } from "generaltranslation";
+import {
+  createApiClient,
+  listProjects,
+  translate as translateEndpoint,
+} from "generaltranslation/api";
+import { hashSource } from "generaltranslation/id";
 import { z } from "zod";
 import manifest from "./manifest.json";
 import {
@@ -79,7 +84,7 @@ export class GeneralTranslationPlugin
     cache: { enabled: true, ttl: 3600 }, // AppKit TTLs are in seconds.
   };
 
-  private gt!: GT;
+  private client!: ReturnType<typeof createApiClient>;
   private projectId = "";
   private tools: ToolRegistry;
 
@@ -112,7 +117,14 @@ export class GeneralTranslationPlugin
       this.config.projectId ??
       (process.env.GT_PROJECT_ID?.trim() || (await resolveProjectId(apiKey)));
     this.projectId = projectId;
-    this.gt = new GT({ apiKey, projectId, sourceLocale: this.defaultLocale });
+    // AppKit's execution signal carries the timeout, so the client sets none.
+    this.client = createApiClient({
+      apiKey,
+      baseUrl: GT_API_URL,
+      projectId,
+      retryPolicy: "none",
+      timeoutMs: false,
+    });
   }
 
   /** Picks the best supported locale for an Accept-Language header. */
@@ -145,30 +157,38 @@ export class GeneralTranslationPlugin
       .digest("hex");
     const result = await this.execute(
       async (executionSignal) => {
-        // GT's client takes a timeout but no AbortSignal, so cancellation is
-        // checked before the request and the timeout bounds it after.
+        const metadata = { dataFormat: "STRING" as const, context };
+        const hashes = texts.map((source) => hashSource({ source, ...metadata }));
+        const { data, error, response } = await translateEndpoint({
+          client: this.client,
+          body: {
+            requests: Object.fromEntries(
+              texts.map((source, i) => [hashes[i], { source, metadata }]),
+            ),
+            targetLocale,
+            sourceLocale,
+            metadata: {},
+          },
+          signal: AbortSignal.any(
+            [signal, executionSignal].filter((s) => s !== undefined),
+          ),
+        });
         signal?.throwIfAborted();
         executionSignal?.throwIfAborted();
-        const results = await this.gt
-          .translateMany(
-            texts.map((source) => ({
-              source,
-              metadata: { dataFormat: "STRING" as const, context },
-            })),
-            { targetLocale, sourceLocale },
-            GeneralTranslationPlugin.DEFAULT_CONFIG.timeout,
-          )
-          .catch((error: unknown) => {
-            throw new GeneralTranslationError(
-              error instanceof ApiError ? error.code : 502,
-              error instanceof Error ? error.message : String(error),
-            );
-          });
+        if (!data)
+          throw new GeneralTranslationError(
+            response?.status ?? 502,
+            error instanceof Error ? error.message : JSON.stringify(error),
+          );
         return {
           locale: targetLocale,
-          translations: results.map((result) => {
-            if (!result.success)
-              throw new GeneralTranslationError(result.code, result.error);
+          translations: hashes.map((hash) => {
+            const result = data[hash];
+            if (!result?.success)
+              throw new GeneralTranslationError(
+                result?.code ?? 502,
+                result?.error ?? "No translation returned",
+              );
             return String(result.translation);
           }),
         };

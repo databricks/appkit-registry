@@ -43,7 +43,7 @@
       ],
       "never": [
         "Hard-code the GT API key in source or app.yaml",
-        "Translate text that is already in the default locale"
+        "Call translate when the source and target locales match"
       ]
     }
   }
