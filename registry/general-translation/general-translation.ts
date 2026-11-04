@@ -195,7 +195,14 @@ export class GeneralTranslationPlugin
       },
       {
         default: GeneralTranslationPlugin.DEFAULT_CONFIG,
-        user: { cache: { cacheKey: ["gt", this.projectId, digest] } },
+        user: {
+          cache: {
+            cacheKey: ["gt", this.projectId, digest],
+            // A shared cached execution would tie every caller to one
+            // caller's signal, so cancellable calls run on their own.
+            ...(signal ? { enabled: false } : {}),
+          },
+        },
       },
     );
     if (!result.ok)
