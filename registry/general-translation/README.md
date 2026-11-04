@@ -45,7 +45,7 @@ await app.gt.translate({
 app.gt.detectLocale('fr-CA,fr;q=0.9,en;q=0.8'); // → "fr"
 ```
 
-AppKit caches each request for 1 hour by default, per user, so repeating the same request doesn't cost another call.
+AppKit caches each identical request for 1 hour by default. The built-in route shares one cache across all users; calls made in a user context are cached separately for that user.
 
 ## Routes
 

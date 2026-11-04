@@ -63,7 +63,6 @@ async function resolveProjectId(apiKey: string): Promise<string> {
  */
 function untilAborted<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
   if (!signal) return promise;
-  signal.throwIfAborted();
   return new Promise((resolve, reject) => {
     const onAbort = () => reject(signal.reason);
     signal.addEventListener("abort", onAbort, { once: true });
@@ -157,6 +156,7 @@ export class GeneralTranslationPlugin
     input: TranslateRequest,
     signal?: AbortSignal,
   ): Promise<TranslateResponse> {
+    signal?.throwIfAborted();
     const { texts, targetLocale, context, ...rest } =
       translateRequestSchema.parse(input);
     const sourceLocale = rest.sourceLocale ?? this.defaultLocale;
