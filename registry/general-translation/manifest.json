@@ -6,6 +6,7 @@
   "version": "0.1.0",
   "stability": "beta",
   "license": "Apache-2.0",
+  "onSetupMessage": "Create a General Translation API key and store it as the Databricks secret bound to apiKey: npx gt login, then npx gt api-key create --project-id <id> --name \"Databricks app\" --permission project:translations:generate | databricks secrets put-secret gt api-key. The plugin finds the project from the key.",
   "resources": {
     "required": [
       {
@@ -29,5 +30,21 @@
       }
     ],
     "optional": []
+  },
+  "scaffolding": {
+    "rules": {
+      "must": [
+        "Bind GT_API_KEY from the apiKey secret resource",
+        "Register generalTranslation with the app's supported locales"
+      ],
+      "should": [
+        "Use the locale-selector block for language switching",
+        "Pass translation context describing where the text appears"
+      ],
+      "never": [
+        "Hard-code the GT API key in source or app.yaml",
+        "Translate text that is already in the default locale"
+      ]
+    }
   }
 }

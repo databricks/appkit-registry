@@ -18,6 +18,7 @@ import {
 } from "@databricks/appkit/beta";
 import type { Response } from "express";
 import { determineLocale, GT, isSameDialect } from "generaltranslation";
+import { createApiClient, listProjects } from "generaltranslation/api";
 import { z } from "zod";
 import manifest from "./manifest.json";
 import {
@@ -31,11 +32,29 @@ export interface GeneralTranslationConfig extends BasePluginConfig {
   defaultLocale?: string;
   /** Locales the app supports. Used for locale detection and the client config. */
   locales?: string[];
-  /** General Translation project ID. Falls back to GT_PROJECT_ID. */
+  /**
+   * General Translation project ID. Falls back to GT_PROJECT_ID, then to the
+   * project the API key is bound to.
+   */
   projectId?: string;
 }
 
+const GT_API_URL = "https://api.gtx.dev";
 const CLIENT_ERROR_MESSAGE = "Translation failed.";
+
+/** A project API key is bound to exactly one project. */
+async function resolveProjectId(apiKey: string): Promise<string> {
+  const client = createApiClient({
+    apiKey,
+    baseUrl: GT_API_URL,
+    timeoutMs: 10_000,
+  });
+  const { data } = await listProjects({ client, query: { limit: 2 } });
+  if (data?.items.length === 1) return data.items[0].id;
+  throw new Error(
+    "Could not find the project for GT_API_KEY. Use a project API key, or set GT_PROJECT_ID.",
+  );
+}
 
 export class GeneralTranslationError extends AppKitError {
   readonly code = "GT_ERROR";
@@ -90,11 +109,9 @@ export class GeneralTranslationPlugin
   async setup() {
     const apiKey = process.env.GT_API_KEY?.trim();
     if (!apiKey) throw new Error("GT_API_KEY is required on the server.");
-    const projectId = this.config.projectId ?? process.env.GT_PROJECT_ID?.trim();
-    if (!projectId)
-      throw new Error(
-        "Set GT_PROJECT_ID or pass projectId to the General Translation plugin.",
-      );
+    const projectId =
+      this.config.projectId ??
+      (process.env.GT_PROJECT_ID?.trim() || (await resolveProjectId(apiKey)));
     this.projectId = projectId;
     this.gt = new GT({ apiKey, projectId, sourceLocale: this.defaultLocale });
   }
