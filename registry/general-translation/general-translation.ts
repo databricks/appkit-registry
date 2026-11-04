@@ -18,7 +18,7 @@ import {
 } from "@databricks/appkit/beta";
 import type { Response } from "express";
 import { determineLocale, GT, isSameDialect } from "generaltranslation";
-import { createApiClient, listProjects } from "generaltranslation/api";
+import { ApiError, createApiClient, listProjects } from "generaltranslation/api";
 import { z } from "zod";
 import manifest from "./manifest.json";
 import {
@@ -59,12 +59,11 @@ async function resolveProjectId(apiKey: string): Promise<string> {
 export class GeneralTranslationError extends AppKitError {
   readonly code = "GT_ERROR";
   readonly isRetryable: boolean;
-  constructor(
-    public readonly statusCode: 429 | 502,
-    details: string,
-  ) {
+  readonly statusCode: 429 | 502;
+  constructor(upstreamStatus: number, details: string) {
     super(details, { clientMessage: CLIENT_ERROR_MESSAGE });
-    this.isRetryable = statusCode === 429;
+    this.statusCode = upstreamStatus === 429 ? 429 : 502;
+    this.isRetryable = this.statusCode === 429;
     this.name = "GeneralTranslationError";
   }
 }
@@ -93,7 +92,7 @@ export class GeneralTranslationPlugin
           "Translate one or more strings into a target locale (BCP 47 code such as 'es' or 'ja'). Text is sent to General Translation.",
         schema: translateRequestSchema,
         annotations: { effect: "read", requiresUserContext: false },
-        execute: (input) => this.translate(input),
+        execute: (input, signal) => this.translate(input, signal),
       }),
     };
   }
@@ -131,32 +130,45 @@ export class GeneralTranslationPlugin
     return determineLocale(requested, this.locales) ?? this.defaultLocale;
   }
 
-  async translate(input: TranslateRequest): Promise<TranslateResponse> {
-    const { texts, targetLocale, sourceLocale, context } =
+  async translate(
+    input: TranslateRequest,
+    signal?: AbortSignal,
+  ): Promise<TranslateResponse> {
+    const { texts, targetLocale, context, ...rest } =
       translateRequestSchema.parse(input);
-    if (isSameDialect(sourceLocale ?? this.defaultLocale, targetLocale))
+    const sourceLocale = rest.sourceLocale ?? this.defaultLocale;
+    if (isSameDialect(sourceLocale, targetLocale))
       return { locale: targetLocale, translations: texts };
 
     const digest = createHash("sha256")
       .update(JSON.stringify({ texts, targetLocale, sourceLocale, context }))
       .digest("hex");
     const result = await this.execute(
-      async () => {
-        const results = await this.gt.translateMany(
-          texts.map((source) => ({
-            source,
-            metadata: { dataFormat: "STRING" as const, context },
-          })),
-          { targetLocale, sourceLocale },
-        );
+      async (executionSignal) => {
+        // GT's client takes a timeout but no AbortSignal, so cancellation is
+        // checked before the request and the timeout bounds it after.
+        signal?.throwIfAborted();
+        executionSignal?.throwIfAborted();
+        const results = await this.gt
+          .translateMany(
+            texts.map((source) => ({
+              source,
+              metadata: { dataFormat: "STRING" as const, context },
+            })),
+            { targetLocale, sourceLocale },
+            GeneralTranslationPlugin.DEFAULT_CONFIG.timeout,
+          )
+          .catch((error: unknown) => {
+            throw new GeneralTranslationError(
+              error instanceof ApiError ? error.code : 502,
+              error instanceof Error ? error.message : String(error),
+            );
+          });
         return {
           locale: targetLocale,
           translations: results.map((result) => {
             if (!result.success)
-              throw new GeneralTranslationError(
-                result.code === 429 ? 429 : 502,
-                result.error,
-              );
+              throw new GeneralTranslationError(result.code, result.error);
             return String(result.translation);
           }),
         };
@@ -167,10 +179,7 @@ export class GeneralTranslationPlugin
       },
     );
     if (!result.ok)
-      throw new GeneralTranslationError(
-        result.status === 429 ? 429 : 502,
-        result.message,
-      );
+      throw new GeneralTranslationError(result.status, result.message);
     return result.data;
   }
 
@@ -227,12 +236,13 @@ export class GeneralTranslationPlugin
         )
         .map((def) => {
           const key =
-            options.rename?.[def.name] || `${options.prefix ?? "gt."}${def.name}`;
+            options.rename?.[def.name] ||
+            `${options.prefix ?? `${this.name}.`}${def.name}`;
           return [
             key,
             {
               __toolkitRef: true as const,
-              pluginName: "gt",
+              pluginName: this.name,
               localName: def.name,
               def: { ...def, name: key },
               annotations: def.annotations,

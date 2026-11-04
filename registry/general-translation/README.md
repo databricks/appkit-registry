@@ -1,6 +1,8 @@
 # General Translation
 
-Locale detection and AI translation for AppKit apps and agents, powered by [General Translation](https://generaltranslation.com).
+Locale detection and AI translation of dynamic content — query results, Genie answers, agent output — for AppKit apps and agents, powered by [General Translation](https://generaltranslation.com).
+
+For your app's static UI text, use [`gt-react`](https://generaltranslation.com/docs/react), which translates at build time instead of on each request.
 
 ## Setup
 
@@ -34,11 +36,11 @@ const app = await createApp({
 
 ```ts
 await app.gt.translate({
-  texts: ['Revenue by region', 'Last updated'],
+  texts: rows.map((row) => row.product_description),
   targetLocale: 'es',
-  context: 'Dashboard labels',
+  context: 'Product descriptions from the catalog table',
 });
-// → { locale: "es", translations: ["Ingresos por región", "Última actualización"] }
+// → { locale: "es", translations: [...] }
 
 app.gt.detectLocale('fr-CA,fr;q=0.9,en;q=0.8'); // → "fr"
 ```
@@ -64,4 +66,4 @@ The plugin exposes a `translate` tool. Add it to an agent with `tools: [plugin:g
 | `locales`       | `[defaultLocale]` | Locales the app supports.                 |
 | `projectId`     | `GT_PROJECT_ID`   | Project ID. Defaults to the API key's project. |
 
-For translating your app's UI strings at build time, use [`gt-react`](https://generaltranslation.com/docs/react) alongside this plugin. The `locale-selector` registry block gives you a ready-made language picker.
+The `locale-selector` registry block gives you a ready-made language picker.
