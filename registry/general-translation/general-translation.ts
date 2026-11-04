@@ -30,8 +30,25 @@ export interface GeneralTranslationConfig extends BasePluginConfig {
   defaultLocale?: string;
   /** Locales the app supports. Used for locale detection and the client config. */
   locales?: string[];
-  /** General Translation project ID. Falls back to GT_PROJECT_ID. */
+  /**
+   * General Translation project ID. Falls back to GT_PROJECT_ID, then to the
+   * project the API key belongs to.
+   */
   projectId?: string;
+}
+
+/** A project API key is bound to one project, which the API will list. */
+async function resolveProjectId(apiKey: string): Promise<string> {
+  const response = await fetch("https://api.gtx.dev/v2/projects", {
+    headers: { Authorization: `Bearer ${apiKey}` },
+  });
+  if (response.ok) {
+    const { items } = (await response.json()) as { items?: { id: string }[] };
+    if (items?.length === 1) return items[0].id;
+  }
+  throw new Error(
+    "Could not find the General Translation project for GT_API_KEY. Use a project API key, or set GT_PROJECT_ID.",
+  );
 }
 
 export class GeneralTranslationError extends AppKitError {
@@ -87,11 +104,10 @@ export class GeneralTranslationPlugin
   async setup() {
     const apiKey = process.env.GT_API_KEY?.trim();
     if (!apiKey) throw new Error("GT_API_KEY is required on the server.");
-    const projectId = this.config.projectId ?? process.env.GT_PROJECT_ID;
-    if (!projectId)
-      throw new Error(
-        "Set GT_PROJECT_ID or pass projectId to the General Translation plugin.",
-      );
+    const projectId =
+      this.config.projectId ||
+      process.env.GT_PROJECT_ID?.trim() ||
+      (await resolveProjectId(apiKey));
     this.gt = new GT({
       apiKey,
       projectId,
