@@ -1,0 +1,33 @@
+{
+  "$schema": "https://databricks.github.io/appkit/schemas/plugin-manifest.schema.json",
+  "name": "gt",
+  "displayName": "General Translation",
+  "description": "Locale detection and AI translation for AppKit apps and agents, powered by General Translation.",
+  "version": "0.1.0",
+  "stability": "beta",
+  "license": "Apache-2.0",
+  "resources": {
+    "required": [
+      {
+        "type": "secret",
+        "alias": "apiKey",
+        "resourceKey": "gt-api-key",
+        "description": "General Translation API key. Bind a Databricks secret with READ permission.",
+        "permission": "READ",
+        "fields": {
+          "scope": {
+            "description": "Databricks secret scope (deployment binding only)"
+          },
+          "key": {
+            "description": "Databricks secret key name (deployment binding only)"
+          },
+          "value": {
+            "env": "GT_API_KEY",
+            "description": "Resolved secret value, not the secret key name"
+          }
+        }
+      }
+    ],
+    "optional": []
+  }
+}
