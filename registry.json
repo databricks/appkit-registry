@@ -32,6 +32,86 @@
           "target": "components/appkit/metric-card.tsx"
         }
       ]
+    },
+    {
+      "name": "general-translation",
+      "type": "registry:file",
+      "title": "General Translation",
+      "description": "Detect each user's locale and translate text from AppKit server routes or agent tools, powered by General Translation.",
+      "author": "General Translation",
+      "categories": [
+        "plugin",
+        "server",
+        "i18n",
+        "localization",
+        "translation",
+        "locale",
+        "language",
+        "agents"
+      ],
+      "dependencies": [
+        "@databricks/appkit@>=0.90.0",
+        "generaltranslation@^9.5.7",
+        "zod@^4.3.6"
+      ],
+      "devDependencies": [
+        "@types/express@^4.17.25"
+      ],
+      "files": [
+        {
+          "path": "registry/general-translation/manifest.json",
+          "type": "registry:file",
+          "target": "plugins/general-translation/manifest.json"
+        },
+        {
+          "path": "registry/general-translation/index.ts",
+          "type": "registry:file",
+          "target": "plugins/general-translation/index.ts"
+        },
+        {
+          "path": "registry/general-translation/general-translation.ts",
+          "type": "registry:file",
+          "target": "plugins/general-translation/general-translation.ts"
+        },
+        {
+          "path": "registry/general-translation/schemas.ts",
+          "type": "registry:file",
+          "target": "plugins/general-translation/schemas.ts"
+        },
+        {
+          "path": "registry/general-translation/README.md",
+          "type": "registry:file",
+          "target": "plugins/general-translation/README.md"
+        }
+      ]
+    },
+    {
+      "name": "locale-selector",
+      "type": "registry:block",
+      "title": "Locale Selector",
+      "description": "A language picker that lists each locale by its native name. Built on AppKit UI Select.",
+      "author": "General Translation",
+      "categories": [
+        "i18n",
+        "localization",
+        "language",
+        "locale",
+        "select",
+        "picker",
+        "switcher"
+      ],
+      "dependencies": [
+        "@databricks/appkit-ui@>=0.41.0",
+        "lucide-react@^0.554.0"
+      ],
+      "registryDependencies": [],
+      "files": [
+        {
+          "path": "registry/locale-selector/locale-selector.tsx",
+          "type": "registry:component",
+          "target": "components/appkit/locale-selector.tsx"
+        }
+      ]
     }
   ]
 }

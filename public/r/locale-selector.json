@@ -1,0 +1,30 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "locale-selector",
+  "type": "registry:block",
+  "title": "Locale Selector",
+  "author": "General Translation",
+  "description": "A language picker that lists each locale by its native name. Built on AppKit UI Select.",
+  "dependencies": [
+    "@databricks/appkit-ui@>=0.41.0",
+    "lucide-react@^0.554.0"
+  ],
+  "registryDependencies": [],
+  "files": [
+    {
+      "path": "registry/locale-selector/locale-selector.tsx",
+      "content": "import {\n  cn,\n  Select,\n  SelectContent,\n  SelectItem,\n  SelectTrigger,\n  SelectValue,\n} from \"@databricks/appkit-ui/react\";\nimport { LanguagesIcon } from \"lucide-react\";\n\nexport interface LocaleSelectorProps {\n  /** BCP 47 locale codes to offer, e.g. [\"en\", \"es\", \"ja\"]. */\n  locales: string[];\n  /** The selected locale. */\n  value: string;\n  /** Called with the new locale code when the user picks one. */\n  onValueChange: (locale: string) => void;\n  /** Accessible label for the trigger. */\n  label?: string;\n  className?: string;\n}\n\n/** The locale's name in its own language, or the code if it can't be named. */\nfunction localeLabel(locale: string): string {\n  try {\n    return new Intl.DisplayNames([locale], { type: \"language\" }).of(locale) ?? locale;\n  } catch {\n    return locale;\n  }\n}\n\n/**\n * A language picker built on AppKit UI Select. Each option shows the locale's\n * name in its own language (e.g. \"español\", \"日本語\").\n */\nexport function LocaleSelector({\n  locales,\n  value,\n  onValueChange,\n  label = \"Language\",\n  className,\n}: LocaleSelectorProps) {\n  return (\n    <Select value={value} onValueChange={onValueChange}>\n      <SelectTrigger aria-label={label} className={cn(\"w-fit gap-2\", className)}>\n        <LanguagesIcon className=\"size-4 text-muted-foreground\" />\n        <SelectValue />\n      </SelectTrigger>\n      <SelectContent>\n        {locales.map((locale) => (\n          <SelectItem key={locale} value={locale}>\n            {localeLabel(locale)}\n          </SelectItem>\n        ))}\n      </SelectContent>\n    </Select>\n  );\n}\n",
+      "type": "registry:component",
+      "target": "components/appkit/locale-selector.tsx"
+    }
+  ],
+  "categories": [
+    "i18n",
+    "localization",
+    "language",
+    "locale",
+    "select",
+    "picker",
+    "switcher"
+  ]
+}
