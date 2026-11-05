@@ -22,7 +22,7 @@ export function Header() {
 
 ### With the `general-translation` plugin
 
-Read the supported locales from the plugin's client config, and start from the locale the server detects for the visitor:
+Read the supported locales from the plugin's client config, and start from the locale the server detects for the visitor. The visitor's own pick always wins, and the default locale stays if detection fails:
 
 ```tsx
 import { useEffect, useState } from "react";
@@ -36,16 +36,19 @@ interface GtClientConfig {
 
 export function Header() {
   const { defaultLocale, locales } = usePluginClientConfig<GtClientConfig>("gt");
-  const [locale, setLocale] = useState(defaultLocale);
+  const [detected, setDetected] = useState<string>();
+  const [picked, setPicked] = useState<string>();
+  const locale = picked ?? detected ?? defaultLocale;
 
   useEffect(() => {
     fetch("/api/gt/locale")
-      .then((res) => res.json())
-      .then((data: { locale: string }) => setLocale(data.locale));
+      .then((res) => (res.ok ? res.json() : undefined))
+      .then((data?: { locale?: string }) => setDetected(data?.locale))
+      .catch(() => {});
   }, []);
 
   return (
-    <LocaleSelector locales={locales} value={locale} onValueChange={setLocale} />
+    <LocaleSelector locales={locales} value={locale} onValueChange={setPicked} />
   );
 }
 ```
