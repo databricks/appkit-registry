@@ -20,6 +20,15 @@ export interface LocaleSelectorProps {
   className?: string;
 }
 
+/** The locale's name in its own language, or the code if it can't be named. */
+function localeLabel(locale: string): string {
+  try {
+    return new Intl.DisplayNames([locale], { type: "language" }).of(locale) ?? locale;
+  } catch {
+    return locale;
+  }
+}
+
 /**
  * A language picker built on AppKit UI Select. Each option shows the locale's
  * name in its own language (e.g. "español", "日本語").
@@ -40,7 +49,7 @@ export function LocaleSelector({
       <SelectContent>
         {locales.map((locale) => (
           <SelectItem key={locale} value={locale}>
-            {new Intl.DisplayNames([locale], { type: "language" }).of(locale)}
+            {localeLabel(locale)}
           </SelectItem>
         ))}
       </SelectContent>
